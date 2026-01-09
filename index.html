@@ -231,7 +231,7 @@
         }
 
         .logo-nbl {
-            height: 150px;
+            height: 130px;
             filter: drop-shadow(0 0 20px rgba(255, 90, 0, 0.6));
             z-index: 25;
         }
@@ -242,15 +242,15 @@
         }
 
         .logo-venue {
-            height: 120px;
-            object-fit: contain;
-            background: white;
-            padding: 5px;
-            border-radius: 5px;
+            height: 150px;
+            /* object-fit: contain; */
+            /* background: white; */
+            /* padding: 5px; */
+            /* border-radius: 5px; */
         }
 
         .logo-mnbcs {
-            height: 110px;
+            height: 120px;
             object-fit: contain;
         }
 
@@ -556,7 +556,7 @@
                 img.src = 'frikiPlaza.jpg';
                 img.onerror = function () { this.src = 'https://placehold.co/150x100/white/black?text=FRIKI+PLAZA'; }
             } else {
-                img.src = 'Arlequin.jpg';
+                img.src = 'Arlequin.png';
                 img.onerror = function () { this.src = 'https://placehold.co/150x100/black/white?text=ARLEQUIN'; }
             }
             document.querySelectorAll('.btn-venue').forEach(b => b.classList.remove('btn-active'));
@@ -641,12 +641,12 @@
             <div class="header-bar">
                 <div class="header-left">
                     <img id="img-venue" src="frikiPlaza.jpg" class="logo-venue"
-                        onerror="this.src='https://placehold.co/150x100/white/black?text=FRIKI'">
+                        >
                     <img src="MNBCS.png" class="logo-mnbcs"
-                        onerror="this.src='https://placehold.co/100x100?text=MNBCS'">
+                        >
                 </div>
                 <div class="header-center">
-                    <img src="NBL.png" class="logo-nbl" onerror="this.src='https://placehold.co/200x150?text=NBL'">
+                    <img src="NBL.png" class="logo-nbl" style="margin-left: 100px;" onerror="this.src='https://placehold.co/200x150?text=NBL'">
                 </div>
                 <div class="header-right">
                     <img src="MFL.png" class="logo-mfl" onerror="this.src='https://placehold.co/150x150?text=MFL'">
@@ -666,7 +666,7 @@
 
                 <!-- SECCION 2: IMAGEN CENTRAL (ELÁSTICA) -->
                 <div class="flex-elastic visual-container">
-                    <div class="price-tag" style="top:20px; right:50px;">COVER: <span contenteditable="true">$70</span>
+                    <div class="price-tag" style="top:20px; right:50px;">COSTO: <span contenteditable="true">$70</span>
                     </div>
 
                     <img id="img-hero-single" src="https://placehold.co/600x600/png?text=SUBIR+IMAGEN"

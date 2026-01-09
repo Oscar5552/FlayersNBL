@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Generador Flyers NBL - Final</title>
+    <title>Generador Flyers NBL - Flex Fix</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Russo+One&family=Teko:wght@400;600&display=swap"
         rel="stylesheet">
@@ -33,7 +33,6 @@
             transition: padding 0.3s;
         }
 
-        /* --- CLASE PARA MODO FOTO (Oculta interfaz) --- */
         body.hide-ui {
             padding-bottom: 0 !important;
             padding-top: 0 !important;
@@ -98,10 +97,9 @@
             border-color: var(--c-secondary);
             box-shadow: 0 0 10px rgba(255, 90, 0, 0.4);
         }
-        
-        /* Botón Terminar especial */
+
         .btn-finish {
-            background: #dc2626 !important; /* Rojo */
+            background: #dc2626 !important;
             color: white !important;
             border: 1px solid #ff0000 !important;
             width: 100% !important;
@@ -202,20 +200,20 @@
             left: 0;
             right: 0;
             height: 240px;
-            z-index: 20;
+            z-index: 50; /* Z-INDEX MUY ALTO PARA QUE SIEMPRE ESTÉ ARRIBA */
             padding: 10px 40px;
             display: grid;
             grid-template-columns: 1fr auto 1fr;
             align-items: center;
         }
 
-        .header-left {
+        .header-left, .header-right {
             display: flex;
             gap: 20px;
-            justify-content: flex-start;
             align-items: center;
         }
-
+        .header-left { justify-content: flex-start; }
+        .header-right { justify-content: flex-end; }
         .header-center {
             display: flex;
             flex-direction: column;
@@ -223,47 +221,12 @@
             align-items: center;
         }
 
-        .header-right {
-            display: flex;
-            gap: 20px;
-            justify-content: flex-end;
-            align-items: center;
-        }
+        .logo-nbl { height: 150px; filter: drop-shadow(0 0 20px rgba(255, 90, 0, 0.6)); z-index: 25; }
+        .logo-mfl { height: 250px; filter: drop-shadow(0 0 10px rgba(255, 210, 0, 0.5)); }
+        .logo-venue { height: 120px; object-fit: contain; background: white; padding: 5px; border-radius: 5px; }
+        .logo-mnbcs { height: 110px; object-fit: contain; }
 
-        /* ESTILOS LOGOS */
-        .logo-nbl {
-            height: 150px;
-            filter: drop-shadow(0 0 20px rgba(255, 90, 0, 0.6));
-            z-index: 25;
-        }
-
-        .logo-mfl {
-            height: 250px;
-            filter: drop-shadow(0 0 10px rgba(255, 210, 0, 0.5));
-        }
-
-        .logo-venue {
-            height: 120px;
-            object-fit: contain;
-            background: white;
-            padding: 5px;
-            border-radius: 5px;
-        }
-
-        .logo-mnbcs {
-            height: 110px;
-            object-fit: contain;
-        }
-
-        .logo-beyblade {
-            height: 100px;
-            object-fit: contain;
-            filter: drop-shadow(0 0 10px rgba(123, 255, 0, 0.675));
-            margin: 30px;
-            z-index: 26;
-        }
-
-
+        /* --- CAMBIO PRINCIPAL: FLEXBOX --- */
         .content-area {
             position: absolute;
             top: 240px;
@@ -271,21 +234,39 @@
             left: 0;
             right: 0;
             z-index: 10;
-            padding: 10px 50px;
-            display: grid;
+            padding: 10px 50px 30px 50px; /* Padding bottom extra */
+            display: flex; 
+            flex-direction: column;
         }
 
         .mode-single .content-area {
-            grid-template-rows: auto 1fr auto;
-            text-align: center;
+            /* Flex column permite que el medio encoja */
+            justify-content: flex-start;
+            gap: 15px; 
         }
 
+        /* Secciones Flexibles */
+        .flex-fixed {
+            flex: 0 0 auto; /* No crece ni encoge, tamaño según contenido */
+        }
+        
+        .flex-elastic {
+            flex: 1 1 auto; /* Ocupa el espacio sobrante */
+            min-height: 0; /* CRÍTICO: Permite que el contenedor se encoja más allá de su contenido si es necesario */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Mode Double mantiene grid por la estructura de 2 columnas, pero ajustada */
         .mode-double .content-area {
+            display: grid;
             grid-template-columns: 1fr 1fr;
-            grid-template-rows: 160px 1fr;
+            grid-template-rows: auto 1fr;
             gap: 20px;
         }
-
+        
         .mode-double .main-title-section {
             grid-column: 1 / -1;
         }
@@ -301,10 +282,7 @@
             z-index: 5;
             display: none;
         }
-
-        .mode-double .vs-line {
-            display: block;
-        }
+        .mode-double .vs-line { display: block; }
 
         .main-title {
             font-family: 'Black Ops One', cursive;
@@ -333,20 +311,12 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
             cursor: pointer;
         }
-
-        .date-time-badge span {
-            display: block;
-            transform: skewX(10deg);
-        }
-
-        .mode-double .date-time-badge {
-            background: var(--c-secondary);
-        }
+        .date-time-badge span { display: block; transform: skewX(10deg); }
+        .mode-double .date-time-badge { background: var(--c-secondary); }
 
         .visual-container {
-            position: relative;
             width: 100%;
-            height: 100%;
+            height: 100%; 
             display: flex;
             justify-content: center;
             align-items: center;
@@ -354,15 +324,13 @@
 
         .visual-img {
             max-width: 100%;
-            max-height: 550px;
+            max-height: 100%; /* Ahora se adapta al contenedor elástico */
             object-fit: contain;
             filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.8));
             cursor: pointer;
         }
 
-        .mode-double .visual-img {
-            max-height: 350px;
-        }
+        .mode-double .visual-img { max-height: 350px; }
 
         .visual-text-box {
             font-family: 'Black Ops One';
@@ -376,7 +344,6 @@
             line-height: 1.1;
             width: 90%;
             height: 90%;
-            max-height: 500px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -384,11 +351,7 @@
             overflow: hidden;
             word-break: break-word;
         }
-
-        .visual-text-box:focus {
-            outline: 2px dashed rgba(255, 255, 255, 0.3);
-            background: rgba(0, 0, 0, 0.2);
-        }
+        .visual-text-box:focus { outline: 2px dashed rgba(255, 255, 255, 0.3); background: rgba(0, 0, 0, 0.2); }
 
         .info-box {
             background: rgba(0, 0, 0, 0.6);
@@ -398,19 +361,17 @@
             text-align: left;
             backdrop-filter: blur(4px);
         }
-
         .info-title {
             color: var(--c-secondary);
             font-family: 'Teko';
-            font-size: 2rem;
+            font-size: 2.6rem;
             border-bottom: 1px solid #555;
             margin-bottom: 5px;
         }
-
         .info-text {
-            font-size: 1.1rem;
+            font-size: 1.7rem;
             color: #ddd;
-            line-height: 1.3;
+            line-height: 1.2;
             white-space: pre-line;
         }
 
@@ -426,85 +387,40 @@
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.8);
         }
 
-        .visual-mode-text .visual-img {
-            display: none;
-        }
-
-        .visual-mode-text .visual-text-box {
-            display: flex;
-        }
-
-        .visual-mode-img .visual-text-box {
-            display: none;
-        }
-
-        .visual-mode-img .visual-img {
-            display: block;
-        }
-
-        .visual-mode-none .visual-container {
-            display: none;
-        }
-
-        .visual-mode-none .price-tag {
-            display: none;
-        }
-
-        .hidden-input {
-            display: none;
-        }
+        .visual-mode-text .visual-img { display: none; }
+        .visual-mode-text .visual-text-box { display: flex; }
+        .visual-mode-img .visual-text-box { display: none; }
+        .visual-mode-img .visual-img { display: block; }
+        .visual-mode-none .visual-container { display: none; }
+        .visual-mode-none .price-tag { display: none; }
+        .hidden-input { display: none; }
 
         @media (max-width: 600px) {
-            .control-panel {
-                padding-bottom: 20px;
-            }
-
-            .btn {
-                font-size: 0.8rem;
-                padding: 8px 5px;
-            }
-
-            .label-text {
-                display: none;
-            }
-
-            .radio-label {
-                font-size: 0.8rem;
-                padding: 6px 10px;
-            }
+            .control-panel { padding-bottom: 20px; }
+            .btn { font-size: 0.8rem; padding: 8px 5px; }
+            .label-text { display: none; }
+            .radio-label { font-size: 0.8rem; padding: 6px 10px; }
         }
     </style>
     <script>
         let currentHeight = 1350;
-
         const days = ['DOMINGO', 'LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO'];
         const months = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
 
         function triggerDate(id) {
             const input = document.getElementById(id);
-            try {
-                input.showPicker();
-            } catch (e) {
-                input.click();
-            }
+            try { input.showPicker(); } catch (e) { input.click(); }
         }
 
         function updateDateDisplay(input, displayId) {
             if (!input.value) return;
-
             const dateObj = new Date(input.value);
             const dayName = days[dateObj.getDay()];
             const dayNum = dateObj.getDate();
             const monthName = months[dateObj.getMonth()];
-
-            let hours = dateObj.getHours();
-            let minutes = dateObj.getMinutes();
-
-            const hoursStr = hours.toString().padStart(2, '0');
-            const minStr = minutes.toString().padStart(2, '0');
-
-            const finalStr = `${dayName} ${dayNum} ${monthName} | ${hoursStr}:${minStr} HRS`;
-            document.getElementById(displayId).innerText = finalStr;
+            let hours = dateObj.getHours().toString().padStart(2, '0');
+            let minutes = dateObj.getMinutes().toString().padStart(2, '0');
+            document.getElementById(displayId).innerText = `${dayName} ${dayNum} ${monthName} | ${hours}:${minutes} HRS`;
         }
 
         function fitText(element) {
@@ -522,10 +438,8 @@
             const windowWidth = window.innerWidth;
             const originalWidth = 1080;
             const margin = 20;
-
             let scale = (windowWidth - margin) / originalWidth;
             if (scale > 1) scale = 1;
-
             card.style.transform = `scale(${scale})`;
             wrapper.style.width = `${originalWidth * scale}px`;
             wrapper.style.height = `${currentHeight * scale}px`;
@@ -546,7 +460,7 @@
         function setMode(mode) {
             document.getElementById('flyer-card').classList.remove('mode-single', 'mode-double');
             document.getElementById('flyer-card').classList.add(`mode-${mode}`);
-            document.getElementById('content-single').style.display = mode === 'single' ? 'grid' : 'none';
+            document.getElementById('content-single').style.display = mode === 'single' ? 'flex' : 'none';
             document.getElementById('content-double').style.display = mode === 'double' ? 'grid' : 'none';
             document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('btn-active'));
             document.getElementById('btn-' + mode).classList.add('btn-active');
@@ -575,23 +489,11 @@
             const bg = document.getElementById('bg-main-img');
             if (type === 'custom') triggerUpload('input-bg');
         }
-
-        // --- FUNCIONES NUEVAS: TERMINAR / RESTAURAR ---
         function finishMode() {
-            // Añade clase al body que oculta controles y padding
             document.body.classList.add('hide-ui');
-            
-            // Pequeña alerta o solo dejar que el usuario descubra
-            // Agregamos un listener "one-time" para que al hacer click vuelva
-            setTimeout(() => {
-                document.addEventListener('click', restoreUI, { once: true });
-            }, 200); // Pequeño delay para que el click del botón no lo active inmediatamente
+            setTimeout(() => { document.addEventListener('click', restoreUI, { once: true }); }, 200);
         }
-
-        function restoreUI() {
-            document.body.classList.remove('hide-ui');
-        }
-
+        function restoreUI() { document.body.classList.remove('hide-ui'); }
     </script>
 </head>
 
@@ -601,11 +503,8 @@
     <input type="file" id="input-hero-single" class="hidden-input" onchange="loadImage(event, 'img-hero-single')">
     <input type="file" id="input-hero-left" class="hidden-input" onchange="loadImage(event, 'img-hero-left')">
     <input type="file" id="input-hero-right" class="hidden-input" onchange="loadImage(event, 'img-hero-right')">
-
-    <input type="datetime-local" id="date-picker-single" class="hidden-input"
-        onchange="updateDateDisplay(this, 'date-display-single')">
-    <input type="datetime-local" id="date-picker-double" class="hidden-input"
-        onchange="updateDateDisplay(this, 'date-display-double')">
+    <input type="datetime-local" id="date-picker-single" class="hidden-input" onchange="updateDateDisplay(this, 'date-display-single')">
+    <input type="datetime-local" id="date-picker-double" class="hidden-input" onchange="updateDateDisplay(this, 'date-display-double')">
 
     <div class="control-panel">
         <div class="panel-row">
@@ -613,13 +512,11 @@
             <button id="btn-single" class="btn btn-mode btn-active" onclick="setMode('single')">1 TORNEO</button>
             <button id="btn-double" class="btn btn-mode" onclick="setMode('double')">2 TORNEOS</button>
         </div>
-
         <div class="panel-row">
             <span class="label-text">VISUAL:</span>
             <div class="radio-group">
                 <label class="radio-label">
-                    <input type="radio" name="visual" class="radio-input" value="img" checked
-                        onchange="setVisualMode('img')">
+                    <input type="radio" name="visual" class="radio-input" value="img" checked onchange="setVisualMode('img')">
                     <span class="radio-text-span">IMG</span>
                 </label>
                 <label class="radio-label">
@@ -632,7 +529,6 @@
                 </label>
             </div>
         </div>
-
         <div class="panel-row">
             <span class="label-text">LUGAR:</span>
             <button id="btn-venue-friki" class="btn btn-venue btn-active" onclick="setVenue('friki')">FRIKI</button>
@@ -642,8 +538,6 @@
             <span class="label-text">FONDO:</span>
             <button class="btn" onclick="changeBg('custom')">SUBIR IMAGEN</button>
         </div>
-        
-        <!-- NUEVA FILA DE ACCIÓN -->
         <div class="panel-row" style="margin-top:5px; border-top: 1px solid #333; padding-top:8px; width:100%;">
             <button class="btn btn-finish" onclick="finishMode()">📷 TERMINAR / FOTO</button>
         </div>
@@ -654,24 +548,17 @@
 
             <div class="bg-layer">
                 <div class="bg-overlay"></div>
-                <img id="bg-main-img"
-                    src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1080&fit=crop"
-                    class="bg-img">
+                <img id="bg-main-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1080&fit=crop" class="bg-img">
             </div>
 
             <div class="header-bar">
                 <div class="header-left">
-                    <img id="img-venue" src="frikiPlaza.jpg" class="logo-venue"
-                        onerror="this.src='https://placehold.co/150x100/white/black?text=FRIKI'">
-                    <img src="MNBCS.png" class="logo-mnbcs"
-                        onerror="this.src='https://placehold.co/100x100?text=MNBCS'">
+                    <img id="img-venue" src="frikiPlaza.jpg" class="logo-venue" onerror="this.src='https://placehold.co/150x100/white/black?text=FRIKI'">
+                    <img src="MNBCS.png" class="logo-mnbcs" onerror="this.src='https://placehold.co/100x100?text=MNBCS'">
                 </div>
-
                 <div class="header-center">
                     <img src="NBL.png" class="logo-nbl" onerror="this.src='https://placehold.co/200x150?text=NBL'">
-                    <!-- <img src="BeybladeLogo.png" class="logo-beyblade" onerror="this.src='https://placehold.co/150x70?text=BEYBLADE'"> -->
                 </div>
-
                 <div class="header-right">
                     <img src="MFL.png" class="logo-mfl" onerror="this.src='https://placehold.co/150x150?text=MFL'">
                 </div>
@@ -680,31 +567,27 @@
             <div class="vs-line"></div>
 
             <div id="content-single" class="content-area">
-                <div style="text-align: center; margin-top: 10px;">
+                <!-- SECCION 1: TÍTULO Y FECHA (FIJA) -->
+                <div class="flex-fixed" style="text-align: center; margin-top: 10px;">
                     <div class="date-time-badge" onclick="triggerDate('date-picker-single')">
                         <span id="date-display-single">TOCA PARA FECHA</span>
                     </div>
                     <h1 class="main-title" contenteditable="true">TORNEO BEYBLADE X<br>G3 LIBRE</h1>
                 </div>
 
-                <div class="visual-container">
-                    <div class="price-tag" style="top:20px; right:50px;">COVER: <span contenteditable="true">$70</span>
-                    </div>
+                <!-- SECCION 2: IMAGEN CENTRAL (ELÁSTICA) -->
+                <div class="flex-elastic visual-container">
+                    <div class="price-tag" style="top:20px; right:50px;">COVER: <span contenteditable="true">$70</span></div>
 
-                    <img id="img-hero-single" src="https://placehold.co/600x600/png?text=SUBIR+IMAGEN"
-                        class="visual-img" onclick="triggerUpload('input-hero-single')">
+                    <img id="img-hero-single" src="https://placehold.co/600x600/png?text=SUBIR+IMAGEN" class="visual-img" onclick="triggerUpload('input-hero-single')">
 
                     <div class="visual-text-box" contenteditable="true" oninput="fitText(this)">
                         ESCRIBE AQUÍ
                     </div>
                 </div>
 
-                <!-- <div class="header-center">
-
-                    <img src="BeybladeLogo.png" class="logo-beyblade"onerror="this.src='https://placehold.co/150x70?text=BEYBLADE'">
-                </div> -->
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <!-- SECCION 3: CAJAS DE INFORMACIÓN (FIJA/CRECIENTE HACIA ARRIBA) -->
+                <div class="flex-fixed" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 10px;">
                     <div class="info-box">
                         <div class="info-title">PREMIOS</div>
                         <div class="info-text" contenteditable="true">
@@ -733,18 +616,15 @@
                 </div>
 
                 <div style="text-align: center;">
-                    <h2 style="color:var(--c-accent); font-size: 2.5rem; margin:0;" contenteditable="true">STANDARD</h2>
-
+                    <h2 style="color:var(--c-accent); font-size: 2.5rem; margin:0;" contenteditable="true">TORNEO 1</h2>
                     <div class="visual-container" style="height: 300px;">
                         <div class="price-tag" style="background:var(--c-accent); top:0; left:20px;">
                             <span contenteditable="true">$50</span>
                         </div>
-                        <img id="img-hero-left" src="https://placehold.co/400x350/png?text=FOTO+1" class="visual-img"
-                            onclick="triggerUpload('input-hero-left')">
+                        <img id="img-hero-left" src="https://placehold.co/400x350/png?text=FOTO+1" class="visual-img" onclick="triggerUpload('input-hero-left')">
                         <div class="visual-text-box" contenteditable="true" oninput="fitText(this)">VS</div>
                     </div>
-
-                    <div class="info-box" style="border-color: var(--c-accent);">
+                    <div class="info-box" style="border-color: var(--c-accent); margin-top: 15px;">
                         <div class="info-title" style="color:var(--c-accent)">DETALLES</div>
                         <div class="info-text" contenteditable="true">
                             Formato Suizo<br>Top Cut 4<br>3on3
@@ -753,19 +633,15 @@
                 </div>
 
                 <div style="text-align: center;">
-                    <h2 style="color:var(--c-primary); font-size: 2.5rem; margin:0;" contenteditable="true">PROHIBIDO
-                    </h2>
-
+                    <h2 style="color:var(--c-primary); font-size: 2.5rem; margin:0;" contenteditable="true">TORNEO 2</h2>
                     <div class="visual-container" style="height: 300px;">
                         <div class="price-tag" style="background:var(--c-primary); top:0; right:20px;">
                             <span contenteditable="true">FREE</span>
                         </div>
-                        <img id="img-hero-right" src="https://placehold.co/400x350/png?text=FOTO+2" class="visual-img"
-                            onclick="triggerUpload('input-hero-right')">
+                        <img id="img-hero-right" src="https://placehold.co/400x350/png?text=FOTO+2" class="visual-img" onclick="triggerUpload('input-hero-right')">
                         <div class="visual-text-box" contenteditable="true" oninput="fitText(this)">VS</div>
                     </div>
-
-                    <div class="info-box" style="border-color: var(--c-primary);">
+                    <div class="info-box" style="border-color: var(--c-primary); margin-top: 15px;">
                         <div class="info-title" style="color:var(--c-primary)">DETALLES</div>
                         <div class="info-text" contenteditable="true">
                             Eliminación Directa<br>1on1<br>Banlist Activa

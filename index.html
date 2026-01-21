@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Generador Flyers NBL - Flex Fix</title>
+    <title>Generador Flyers NBL - Flex Fix + Footer</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Russo+One&family=Teko:wght@400;600&display=swap"
         rel="stylesheet">
@@ -244,10 +244,6 @@
         .logo-venue {
             height: 150px;
             filter: drop-shadow(0 0 10px rgba(255, 128, 0, 0.5));
-            /* object-fit: contain; */
-            /* background: white; */
-            /* padding: 5px; */
-            /* border-radius: 5px; */
         }
 
         .logo-mnbcs {
@@ -256,7 +252,7 @@
             filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.877));
         }
 
-        /* --- CAMBIO PRINCIPAL: FLEXBOX --- */
+        /* --- FLEXBOX --- */
         .content-area {
             position: absolute;
             top: 240px;
@@ -297,7 +293,7 @@
         .mode-double .content-area {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto 1fr;
+            grid-template-rows: auto 1fr auto; /* Añadido 'auto' al final para el footer */
             gap: 20px;
         }
 
@@ -369,7 +365,6 @@
         .visual-img {
             max-width: 100%;
             max-height: 100%;
-            /* Ahora se adapta al contenedor elástico */
             object-fit: contain;
             filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.8));
             cursor: pointer;
@@ -440,52 +435,51 @@
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.8);
         }
 
-        .visual-mode-text .visual-img {
-            display: none;
+        /* --- NUEVO: ESTILOS PARA EL FOOTER DE TEXTO --- */
+        .footer-note {
+            width: 100%;
+            margin-top: auto; /* Empuja hacia abajo si hay espacio flexible */
+            padding: 5px 10px;
+            text-align: center;
+            font-family: 'Teko', sans-serif;
+            font-size: 1.8rem;
+            color: #ffffff;
+            /* Sombra fuerte para que se lea sobre cualquier imagen */
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 1), 0 0 10px rgba(0,0,0,0.8); 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 20;
+            line-height: 1.1;
+            /* Para que no rompa el layout */
+            flex: 0 0 auto; 
+        }
+        
+        .footer-note:focus {
+            outline: 1px dashed var(--c-primary);
+            background: rgba(0,0,0,0.5);
+            border-radius: 5px;
         }
 
-        .visual-mode-text .visual-text-box {
-            display: flex;
+        /* Grid specific fix for Double Mode */
+        .mode-double .footer-note {
+            grid-column: 1 / -1; /* Ocupa las dos columnas */
+            margin-top: 10px;
         }
 
-        .visual-mode-img .visual-text-box {
-            display: none;
-        }
-
-        .visual-mode-img .visual-img {
-            display: block;
-        }
-
-        .visual-mode-none .visual-container {
-            display: none;
-        }
-
-        .visual-mode-none .price-tag {
-            display: none;
-        }
-
-        .hidden-input {
-            display: none;
-        }
+        /* --- VISUAL MODES --- */
+        .visual-mode-text .visual-img { display: none; }
+        .visual-mode-text .visual-text-box { display: flex; }
+        .visual-mode-img .visual-text-box { display: none; }
+        .visual-mode-img .visual-img { display: block; }
+        .visual-mode-none .visual-container { display: none; }
+        .visual-mode-none .price-tag { display: none; }
+        .hidden-input { display: none; }
 
         @media (max-width: 600px) {
-            .control-panel {
-                padding-bottom: 20px;
-            }
-
-            .btn {
-                font-size: 0.8rem;
-                padding: 8px 5px;
-            }
-
-            .label-text {
-                display: none;
-            }
-
-            .radio-label {
-                font-size: 0.8rem;
-                padding: 6px 10px;
-            }
+            .control-panel { padding-bottom: 20px; }
+            .btn { font-size: 0.8rem; padding: 8px 5px; }
+            .label-text { display: none; }
+            .radio-label { font-size: 0.8rem; padding: 6px 10px; }
         }
     </style>
     <script>
@@ -658,7 +652,6 @@
             <div class="vs-line"></div>
 
             <div id="content-single" class="content-area">
-                <!-- SECCION 1: TÍTULO Y FECHA (FIJA) -->
                 <div class="flex-fixed" style="text-align: center; margin-top: 10px;">
                     <div class="date-time-badge" onclick="triggerDate('date-picker-single')">
                         <span id="date-display-single">TOCA PARA FECHA</span>
@@ -666,9 +659,8 @@
                     <h1 class="main-title" contenteditable="true">TORNEO BEYBLADE X<br>G3 LIBRE</h1>
                 </div>
 
-                <!-- SECCION 2: IMAGEN CENTRAL (ELÁSTICA) -->
                 <div class="flex-elastic visual-container">
-                    <div class="price-tag" style="top:20px; right:50px;">COSTO: <span contenteditable="true">$70</span>
+                    <div class="price-tag" style="top:20px; right:50px;">COSTO: <span contenteditable="true">$100</span>
                     </div>
 
                     <img id="img-hero-single" src="https://placehold.co/600x600/png?text=SUBIR+IMAGEN"
@@ -679,7 +671,6 @@
                     </div>
                 </div>
 
-                <!-- SECCION 3: CAJAS DE INFORMACIÓN (FIJA/CRECIENTE HACIA ARRIBA) -->
                 <div class="flex-fixed"
                     style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 10px;">
                     <div class="info-box">
@@ -698,6 +689,10 @@
                             • MFL Rules
                         </div>
                     </div>
+                </div>
+
+                <div class="footer-note" contenteditable="true">
+                    Premio exclusivo de niños menores de 12 años | TOLERANCIA 15 MIN | 
                 </div>
             </div>
 
@@ -744,6 +739,10 @@
                             Eliminación Directa<br>1on1<br>Banlist Activa
                         </div>
                     </div>
+                </div>
+
+                <div class="footer-note" contenteditable="true">
+                    AMBOS TORNEOS REQUIEREN INSCRIPCIÓN PREVIA | CUPO LIMITADO A 32 JUGADORES
                 </div>
             </div>
 

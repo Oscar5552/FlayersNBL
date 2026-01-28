@@ -11,16 +11,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
 <style>
         :root {
-            /* NUEVOS COLORES BASADOS EN EL LOGO SGL */
-            --c-primary: #00f2ea;    /* Azul Neón del fuego */
-            --c-secondary: #ffffff;  /* Blanco */
-            --c-accent: #6a1b9a;     /* Morado del borde */
+            /* COLORES BASADOS EN EL LOGO SGL */
+            --c-primary: #00E5FF;       /* Cian (fuego) */
+            --c-secondary: #007BFF;     /* Azul eléctrico (fuego) */
+            --c-accent: #320A5C;        /* Morado (aro) */
+            --c-accent-2: #1E0638;      /* Morado más oscuro */
+
+            --c-bg: #000000;
             --c-dark: #050505;
             --c-panel: rgba(5, 5, 5, 0.95);
+
+            /* RGB helpers para glows */
+            --c-primary-rgb: 0, 229, 255;
+            --c-secondary-rgb: 0, 123, 255;
+            --c-accent-rgb: 50, 10, 92;
         }
 
         body {
-            background-color: #0a0a0a;
+            background-color: var(--c-bg);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -58,7 +66,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            box-shadow: 0 -5px 25px rgba(0, 242, 234, 0.3);
+            box-shadow: 0 -5px 25px rgba(var(--c-primary-rgb), 0.3);
             backdrop-filter: blur(10px);
         }
 
@@ -97,18 +105,18 @@
             color: black;
             font-weight: bold;
             border-color: white;
-            box-shadow: 0 0 15px rgba(0, 242, 234, 0.6);
+            box-shadow: 0 0 15px rgba(var(--c-primary-rgb), 0.6);
         }
 
         .btn-finish {
-            background: linear-gradient(90deg, #6a1b9a, #4a148c) !important;
+            background: linear-gradient(90deg, var(--c-accent), var(--c-accent-2)) !important;
             color: white !important;
             border: 1px solid var(--c-primary) !important;
             width: 100% !important;
             max-width: none !important;
             font-size: 1.2rem !important;
             letter-spacing: 2px;
-            box-shadow: 0 0 20px rgba(106, 27, 154, 0.5);
+            box-shadow: 0 0 20px rgba(var(--c-accent-rgb), 0.5);
         }
 
         .label-text {
@@ -160,7 +168,7 @@
         #scale-wrapper {
             position: relative;
             margin: 0 auto;
-            box-shadow: 0 0 60px rgba(0, 242, 234, 0.2);
+            box-shadow: 0 0 60px rgba(var(--c-primary-rgb), 0.2);
             transition: height 0.3s ease;
         }
 
@@ -235,17 +243,17 @@
 
         .logo-nbl {
             height: 140px;
-            filter: drop-shadow(0 0 25px rgba(0, 242, 234, 0.7));
+            filter: drop-shadow(0 0 25px rgba(var(--c-primary-rgb), 0.7));
         }
 
         .logo-SGL {
             height: 190px;
-            filter: drop-shadow(0 0 15px rgba(106, 27, 154, 0.6));
+            filter: drop-shadow(0 0 15px rgba(var(--c-accent-rgb), 0.6));
         }
 
         .logo-venue {
             height: 150px;
-            filter: drop-shadow(0 0 15px rgba(0, 242, 234, 0.4));
+            filter: drop-shadow(0 0 15px rgba(var(--c-primary-rgb), 0.4));
         }
 
 
@@ -331,7 +339,7 @@
             text-transform: uppercase;
             border: 3px solid white;
             transform: skewX(-10deg);
-            box-shadow: 0 0 20px rgba(0, 242, 234, 0.5);
+            box-shadow: 0 0 20px rgba(var(--c-primary-rgb), 0.5);
             cursor: pointer;
         }
 
@@ -426,7 +434,7 @@
             transform: rotate(-3deg);
             position: absolute;
             z-index: 30;
-            box-shadow: 0 0 20px rgba(106, 27, 154, 0.8);
+            box-shadow: 0 0 20px rgba(var(--c-accent-rgb), 0.8);
         }
 
         .footer-note {

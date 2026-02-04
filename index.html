@@ -339,7 +339,7 @@
         }
 
         .awards-grid {
-            display: none;
+            display: flex;
             justify-content: center;
             gap: 20px;
             width: 100%;
@@ -364,7 +364,7 @@
             position: relative;
             cursor: pointer;
             overflow: hidden;
-            display: block;
+            display: none;
         }
 
         .award-img {
@@ -511,8 +511,9 @@
 
         <div class="panel-row">
             <span class="label-text">PREMIOS:</span>
-            <button class="btn" onclick="setPrizeMode('grid')">CASILLAS</button>
-            <button class="btn" onclick="setPrizeMode('banner')">BANNER</button>
+            <button id="btn-prize-none" class="btn" onclick="setPrizeMode('none')">NADA</button>
+            <button id="btn-prize-grid" class="btn" onclick="setPrizeMode('grid')">CASILLAS</button>
+            <button id="btn-prize-banner" class="btn" onclick="setPrizeMode('banner')">BANNER</button>
         </div>
 
         <div class="panel-row">
@@ -524,6 +525,10 @@
 
         <div class="panel-row" style="margin-top:5px; border-top: 1px solid #333; padding-top:8px; width:100%;">
             <button class="btn btn-finish" onclick="finishMode()">📷 TERMINAR / FOTO</button>
+        </div>
+
+        <div class="panel-row" style="margin-top:5px; border-top: 1px solid #333; padding-top:8px; width:100%;">
+            <button class="btn btn-finish" onclick="downloadFlyerHD()">⬇️ DESCARGAR HD</button>
         </div>
     </div>
 
@@ -560,7 +565,7 @@
                         <div class="visual-text-box" contenteditable="true" oninput="resizeCard()">ESCRIBE AQUÍ</div>
                     </div>
 
-                    <div class="awards-section">
+                    <div id="awards-section" class="awards-section">
                         <div id="awards-grid" class="awards-grid">
                             <div class="award-card" onclick="triggerUpload('input-award-1')"><img id="img-award-1"
                                     src="https://placehold.co/200/111/00E5FF?text=1" class="award-img">
@@ -579,12 +584,10 @@
                                 <div class="award-label" contenteditable="true">EXTRA</div>
                             </div>
                         </div>
-                        <div id="awards-banner" class="awards-banner" onclick="triggerUpload('input-award-banner')">
-                            <img id="img-award-banner"
-                                src="https://placehold.co/800x200/111/00E5FF?text=TOCA+PARA+SUBIR+IMAGEN+PANORAMICA+DE+PREMIOS"
-                                class="award-img">
-                            <div class="award-label" contenteditable="true">GALERIA DE PREMIOS SUJETO A DISPONIBILIDAD DE LA TIENDA</div>
-                        </div>
+                         <div id="awards-banner" class="awards-banner" onclick="triggerUpload('input-award-banner')">
+                             <img id="img-award-banner" src="" class="award-img" style="display:none;">
+                             <div class="award-label" contenteditable="true">GALERIA DE PREMIOS SUJETO A DISPONIBILIDAD DE LA TIENDA</div>
+                         </div>
                     </div>
 
                     <div class="info-grid">
@@ -655,6 +658,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
         const days = ['DOMINGO', 'LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO'];
         const months = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
@@ -669,14 +673,16 @@
             document.getElementById(displayId).innerText = str;
         }
 
-        function loadImage(event, id) {
-            const r = new FileReader();
-            r.onload = e => {
-                document.getElementById(id).src = e.target.result;
-                setTimeout(resizeCard, 50);
-            };
-            if (event.target.files[0]) r.readAsDataURL(event.target.files[0]);
-        }
+         function loadImage(event, id) {
+             const r = new FileReader();
+             r.onload = e => {
+                 const el = document.getElementById(id);
+                 el.src = e.target.result;
+                 if (el.style && el.style.display === 'none') el.style.display = '';
+                 setTimeout(resizeCard, 50);
+             };
+             if (event.target.files[0]) r.readAsDataURL(event.target.files[0]);
+         }
 
         /* ESCALADO FLUIDO */
         function resizeCard() {
@@ -713,8 +719,27 @@
         }
 
         function setPrizeMode(mode) {
-            document.getElementById('awards-grid').style.display = mode === 'grid' ? 'flex' : 'none';
-            document.getElementById('awards-banner').style.display = mode === 'banner' ? 'block' : 'none';
+            const section = document.getElementById('awards-section');
+            const grid = document.getElementById('awards-grid');
+            const banner = document.getElementById('awards-banner');
+
+            if (section) section.style.display = mode === 'none' ? 'none' : 'flex';
+            if (grid) grid.style.display = mode === 'grid' ? 'flex' : 'none';
+            if (banner) banner.style.display = mode === 'banner' ? 'block' : 'none';
+
+            // Si se oculta la sección, limpia el input de banner para que no quede seleccionado.
+            if (mode !== 'banner') {
+                const bannerInput = document.getElementById('input-award-banner');
+                if (bannerInput) bannerInput.value = '';
+            }
+
+            const btnNone = document.getElementById('btn-prize-none');
+            const btnGrid = document.getElementById('btn-prize-grid');
+            const btnBanner = document.getElementById('btn-prize-banner');
+            if (btnNone) btnNone.classList.toggle('btn-active', mode === 'none');
+            if (btnGrid) btnGrid.classList.toggle('btn-active', mode === 'grid');
+            if (btnBanner) btnBanner.classList.toggle('btn-active', mode === 'banner');
+
             setTimeout(resizeCard, 50);
         }
 
@@ -733,15 +758,94 @@
             }
         }
 
+        let isExporting = false;
+
         function finishMode() {
             document.body.classList.add('hide-ui');
             resizeCard();
             setTimeout(() => { document.addEventListener('click', () => { document.body.classList.remove('hide-ui'); }, { once: true }); }, 500);
         }
 
-        window.addEventListener('resize', resizeCard);
-        window.addEventListener('load', resizeCard);
-        const observer = new MutationObserver(resizeCard);
+        async function downloadFlyerHD() {
+            const card = document.getElementById('flyer-card');
+            if (!card) return;
+
+            if (!window.html2canvas) {
+                alert('No se pudo cargar la librería para exportar la imagen. Revisa tu conexión e intenta de nuevo.');
+                return;
+            }
+
+            // Guardar estilos actuales para restaurar al final.
+            const prevTransform = card.style.transform;
+            const wrapper = document.getElementById('scale-wrapper');
+            const prevWrapperW = wrapper ? wrapper.style.width : '';
+            const prevWrapperH = wrapper ? wrapper.style.height : '';
+
+            // Evitar que resizeCard / MutationObserver modifiquen el layout durante la exportación.
+            isExporting = true;
+            if (typeof observer !== 'undefined' && observer) observer.disconnect();
+
+            // Exportar a tamaño real (1080px de ancho) para evitar pérdida por escalado.
+            card.style.transform = 'scale(1)';
+            if (wrapper) {
+                wrapper.style.width = '1080px';
+                wrapper.style.height = `${card.offsetHeight}px`;
+            }
+
+            // Asegura que el layout esté estable.
+            if (document.fonts && document.fonts.ready) {
+                try { await document.fonts.ready; } catch (e) { console.warn('document.fonts.ready falló', e); }
+            }
+
+            // Esperar a que imágenes terminen de cargar (evita capturas con placeholders en blanco).
+            const imgs = Array.from(card.querySelectorAll('img'));
+            await Promise.all(imgs.map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => {
+                    const done = () => resolve();
+                    img.addEventListener('load', done, { once: true });
+                    img.addEventListener('error', done, { once: true });
+                });
+            }));
+
+            await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+            try {
+                const canvas = await window.html2canvas(card, {
+                    backgroundColor: null,
+                    scale: 2,
+                    useCORS: true
+                });
+
+                const link = document.createElement('a');
+                link.download = `flyer-${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (err) {
+                console.error(err);
+                alert('No se pudo exportar la imagen. Si usas imágenes de internet, el navegador puede bloquear la exportación por seguridad.');
+            } finally {
+                // Restaurar estilos.
+                card.style.transform = prevTransform;
+                if (wrapper) {
+                    wrapper.style.width = prevWrapperW;
+                    wrapper.style.height = prevWrapperH;
+                }
+                isExporting = false;
+                if (typeof observer !== 'undefined' && observer) {
+                    observer.observe(document.getElementById('flyer-card'), { attributes: true, childList: true, subtree: true, characterData: true });
+                }
+                setTimeout(resizeCard, 50);
+            }
+        }
+
+        window.addEventListener('resize', () => { if (!isExporting) resizeCard(); });
+        window.addEventListener('load', () => {
+            setPrizeMode('none');
+            resizeCard();
+        });
+
+        const observer = new MutationObserver(() => { if (!isExporting) resizeCard(); });
         observer.observe(document.getElementById('flyer-card'), { attributes: true, childList: true, subtree: true, characterData: true });
     </script>
 </body>

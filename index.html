@@ -418,6 +418,21 @@
             box-shadow: 0 0 20px rgba(var(--c-accent-rgb), 0.8);
         }
 
+        .tournament-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 300px;
+            z-index: 100;
+            cursor: move;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+            display: none;
+        }
+
+        .tournament-badge:active {
+            cursor: grabbing;
+        }
+
         /* --- MODOS VISUALES Y LÓGICA --- */
         #content-single {
             display: flex;
@@ -504,9 +519,9 @@
 
         <div class="panel-row">
             <span class="label-text">VISUAL:</span>
-            <button class="btn" onclick="setVisualMode('text')">TXT</button>
-            <button class="btn" onclick="setVisualMode('img')">IMG</button>
-            <button class="btn" onclick="setVisualMode('none')">NADA</button>
+            <button id="btn-vis-txt" class="btn btn-active" onclick="setVisualMode('text')">TXT</button>
+            <button id="btn-vis-img" class="btn" onclick="setVisualMode('img')">IMG</button>
+            <button id="btn-vis-none" class="btn" onclick="setVisualMode('none')">NADA</button>
         </div>
 
         <div class="panel-row">
@@ -514,6 +529,16 @@
             <button id="btn-prize-none" class="btn" onclick="setPrizeMode('none')">NADA</button>
             <button id="btn-prize-grid" class="btn" onclick="setPrizeMode('grid')">CASILLAS</button>
             <button id="btn-prize-banner" class="btn" onclick="setPrizeMode('banner')">BANNER</button>
+        </div>
+
+        <div class="panel-row">
+            <span class="label-text">TIPO:</span>
+            <button id="btn-type-chill" class="btn" onclick="setTournamentType('chill')">CHILL</button>
+            <button id="btn-type-minor" class="btn" onclick="setTournamentType('minor')">MINOR</button>
+            <button id="btn-type-local" class="btn" onclick="setTournamentType('local')">LOCAL</button>
+            <button id="btn-type-reto" class="btn" onclick="setTournamentType('reto')">RETO</button>
+            <button id="btn-type-copa" class="btn" onclick="setTournamentType('copa')">COPA</button>
+            <button id="btn-type-none" class="btn btn-active" onclick="setTournamentType('none')">NINGUNO</button>
         </div>
 
         <div class="panel-row">
@@ -540,6 +565,8 @@
                 <img id="bg-main-img" src="fondo2.jpg" class="bg-img"
                     onerror="this.src='https://placehold.co/1080x1920/black/333'">
             </div>
+
+            <img id="tournament-badge" src="" class="tournament-badge" onmousedown="startDrag(event, this)" onerror="this.style.display='none'">
 
             <div class="header-bar">
                 <div class="header-left"><img id="img-venue" src="Arlequin.png" class="logo-venue"
@@ -595,21 +622,27 @@
                             <div class="info-title">PREMIOS</div>
                             <div class="info-text" contenteditable="true">Del dinero acumulado en la inscripción:
 
-• 1° Lugar: 40% del crédito acumulado
-
-• 2° Lugar: 30% del crédito acumulado
-
-• 3° Lugar: 20% del crédito acumulado</div>
+* 1° Lugar: 35% del crédito
+acumulado
+* 2° Lugar: 25% del crédito
+acumulado
+* 3° Lugar: 15% del crédito
+acumulado
+GOAT: 10% del crédito
+acumulado
+Suerte: 5% del crédito
+acumulado</div>
                         </div>
                         <div class="info-box" style="border-color: var(--c-primary);">
                             <div class="info-title">REGLAS</div>
-                            <div class="info-text" contenteditable="true">• Formato 3G (3 Blades)
+                            <div class="info-text" contenteditable="true">* Formato 3G (3 Blades)
 
-• Fase de grupos 7 pts. 1 set
+* Fase de grupos 7 pts. 1 set
 
-• Eliminación directa 7 pts. el mejor de 3 sets
+* Eliminación directa 7 pts. el
+mejor de 3 sets
 
-• SGL Rules </div>
+* SGL Rules </div>
                         </div>
                     </div>
                 </div>
@@ -658,6 +691,7 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
         const days = ['DOMINGO', 'LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO'];
@@ -683,6 +717,72 @@
              };
              if (event.target.files[0]) r.readAsDataURL(event.target.files[0]);
          }
+
+        /* LÓGICA DE TORNEO Y DRAG */
+        function setTournamentType(type) {
+            const badge = document.getElementById('tournament-badge');
+            
+            // Actualizar botones activos
+            const types = ['chill', 'minor', 'local', 'reto', 'copa', 'none'];
+            types.forEach(t => {
+                const btn = document.getElementById(`btn-type-${t}`);
+                if (btn) btn.classList.toggle('btn-active', t === type);
+            });
+
+            if (type === 'none') {
+                badge.style.display = 'none';
+                return;
+            }
+            
+            // Ajustar tamaño individual según el tipo
+            if (type === 'minor') {
+                badge.style.width = '220px';
+            } else if (type === 'reto' || type === 'copa') {
+                badge.style.width = '400px';
+            } else {
+                badge.style.width = '300px'; // Chill, Local
+            }
+
+            badge.src = type + '.png';
+            badge.style.display = 'block';
+        }
+
+        let dragItem = null;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let objStartX = 0;
+        let objStartY = 0;
+
+        function startDrag(e, el) {
+            e.preventDefault();
+            dragItem = el;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            objStartX = el.offsetLeft;
+            objStartY = el.offsetTop;
+            
+            document.addEventListener('mousemove', doDrag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        function doDrag(e) {
+            if (!dragItem) return;
+            
+            // Recalcular escala actual para movimiento preciso
+            const scale = Math.min((window.innerWidth - 20) / 1080, 1);
+            
+            const dx = (e.clientX - dragStartX) / scale;
+            const dy = (e.clientY - dragStartY) / scale;
+            
+            dragItem.style.left = (objStartX + dx) + 'px';
+            dragItem.style.top = (objStartY + dy) + 'px';
+        }
+
+        function stopDrag() {
+            dragItem = null;
+            document.removeEventListener('mousemove', doDrag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
 
         /* ESCALADO FLUIDO */
         function resizeCard() {
@@ -715,6 +815,12 @@
             const card = document.getElementById('flyer-card');
             card.classList.remove('visual-mode-img', 'visual-mode-text', 'visual-mode-none');
             card.classList.add(`visual-mode-${type}`);
+
+            // Actualizar botones activos
+            document.getElementById('btn-vis-txt').classList.toggle('btn-active', type === 'text');
+            document.getElementById('btn-vis-img').classList.toggle('btn-active', type === 'img');
+            document.getElementById('btn-vis-none').classList.toggle('btn-active', type === 'none');
+
             setTimeout(resizeCard, 50);
         }
 
@@ -766,14 +872,108 @@
             setTimeout(() => { document.addEventListener('click', () => { document.body.classList.remove('hide-ui'); }, { once: true }); }, 500);
         }
 
+        async function inlineImages(node) {
+            const imgs = node.querySelectorAll('img');
+            for (const img of imgs) {
+                if (img.src && !img.src.startsWith('data:')) {
+                    try {
+                        const response = await fetch(img.src);
+                        const blob = await response.blob();
+                        const reader = new FileReader();
+                        await new Promise((resolve) => {
+                            reader.onloadend = () => {
+                                img.dataset.originalSrc = img.src; // Guardar original para restaurar
+                                img.src = reader.result;
+                                resolve();
+                            };
+                            reader.readAsDataURL(blob);
+                        });
+                    } catch (e) {
+                        console.warn('No se pudo convertir a base64:', img.src, e);
+                    }
+                }
+            }
+        }
+
+        function restoreImages(node) {
+            const imgs = node.querySelectorAll('img');
+            for (const img of imgs) {
+                if (img.dataset.originalSrc) {
+                    img.src = img.dataset.originalSrc;
+                    delete img.dataset.originalSrc;
+                }
+            }
+        }
+
+        // --- GESTIÓN DE FUENTES (SOLUCIÓN BASE64) ---
+        async function embedGoogleFonts() {
+            const fontUrl = 'https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Russo+One&family=Teko:wght@400;600&display=swap';
+            try {
+                // 1. Obtener el CSS de Google Fonts
+                const cssRes = await fetch(fontUrl);
+                let cssText = await cssRes.text();
+
+                // 2. Encontrar todas las URLs de fuentes (woff2)
+                const urlRegex = /url\((https:\/\/fonts\.gstatic\.com\/[^)]+)\)/g;
+                let match;
+                const replacements = [];
+
+                while ((match = urlRegex.exec(cssText)) !== null) {
+                    const originalUrl = match[1];
+                    // Evitar duplicados
+                    if (!replacements.find(r => r.url === originalUrl)) {
+                        replacements.push({ url: originalUrl });
+                    }
+                }
+
+                // 3. Descargar cada fuente y convertir a Base64
+                await Promise.all(replacements.map(async (item) => {
+                    try {
+                        const fontRes = await fetch(item.url);
+                        const blob = await fontRes.blob();
+                        const reader = new FileReader();
+                        await new Promise((resolve) => {
+                            reader.onloadend = () => {
+                                item.base64 = reader.result;
+                                resolve();
+                            };
+                            reader.readAsDataURL(blob);
+                        });
+                    } catch (e) {
+                        console.warn('Error fetching font:', item.url, e);
+                    }
+                }));
+
+                // 4. Reemplazar URLs en el CSS
+                replacements.forEach(item => {
+                    if (item.base64) {
+                        cssText = cssText.replace(new RegExp(item.url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), item.base64);
+                    }
+                });
+
+                // 5. Inyectar estilo en el head
+                const style = document.createElement('style');
+                style.id = 'embedded-google-fonts';
+                style.textContent = cssText;
+                document.head.appendChild(style);
+                console.log('Fuentes incrustadas correctamente.');
+                
+                // Pequeña espera para asegurar que el navegador parsea las nuevas fuentes
+                await document.fonts.ready;
+
+            } catch (err) {
+                console.error('Error incrustando fuentes:', err);
+            }
+        }
+
+        function removeEmbeddedFonts() {
+            const style = document.getElementById('embedded-google-fonts');
+            if (style) style.remove();
+        }
+
         async function downloadFlyerHD() {
             const card = document.getElementById('flyer-card');
             if (!card) return;
-
-            if (!window.html2canvas) {
-                alert('No se pudo cargar la librería para exportar la imagen. Revisa tu conexión e intenta de nuevo.');
-                return;
-            }
 
             // Guardar estilos actuales para restaurar al final.
             const prevTransform = card.style.transform;
@@ -785,58 +985,110 @@
             isExporting = true;
             if (typeof observer !== 'undefined' && observer) observer.disconnect();
 
-            // Exportar a tamaño real (1080px de ancho) para evitar pérdida por escalado.
+            // Exportar a tamaño real (1080px de ancho)
             card.style.transform = 'scale(1)';
             if (wrapper) {
                 wrapper.style.width = '1080px';
                 wrapper.style.height = `${card.offsetHeight}px`;
             }
 
-            // Asegura que el layout esté estable.
-            if (document.fonts && document.fonts.ready) {
-                try { await document.fonts.ready; } catch (e) { console.warn('document.fonts.ready falló', e); }
-            }
+            // Asegurar que las fuentes y estilos estén listos
+            // PASO CRÍTICO: Incrustar fuentes antes de esperar
+            await embedGoogleFonts(); 
+            await new Promise(r => setTimeout(r, 500)); // Espera extra generosa para renderizado de fuentes
 
-            // Esperar a que imágenes terminen de cargar (evita capturas con placeholders en blanco).
-            const imgs = Array.from(card.querySelectorAll('img'));
-            await Promise.all(imgs.map(img => {
-                if (img.complete) return Promise.resolve();
-                return new Promise(resolve => {
-                    const done = () => resolve();
-                    img.addEventListener('load', done, { once: true });
-                    img.addEventListener('error', done, { once: true });
-                });
-            }));
+            // Intentar convertir imágenes a Base64 para evitar errores de seguridad
+            try { await inlineImages(card); } catch (e) { console.error('Error convirtiendo imágenes a base64', e); }
 
-            await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+            // Estrategia Híbrida:
+            // 1. Intentar html-to-image (Mejor calidad, CSS moderno).
+            // 2. Si falla, fallback a html2canvas (Más compatible, pero menos efectos).
+            
+            let dataUrl = null;
+            let method = 'html-to-image';
 
             try {
-                const canvas = await window.html2canvas(card, {
-                    backgroundColor: null,
-                    scale: 2,
-                    useCORS: true
-                });
+                if (window.htmlToImage) {
+                    console.log('Intentando exportar con html-to-image...');
+                    // Fix específico para background-clip:text en Webkit dentro de html-to-image
+                    // (A veces se pierde sin esto)
+                    const title = card.querySelector('.main-title');
+                    const originalClip = title.style.webkitBackgroundClip;
+                    title.style.webkitBackgroundClip = 'text'; 
+                    title.style.backgroundClip = 'text';
 
-                const link = document.createElement('a');
-                link.download = `flyer-${Date.now()}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+                    dataUrl = await window.htmlToImage.toPng(card, {
+                        quality: 1.0,
+                        pixelRatio: 1,
+                        cacheBust: true,
+                        style: { transform: 'none', margin: '0' },
+                        // Filtro para ignorar elementos invisibles o problemáticos si los hay
+                        filter: (node) => (node.classList && !node.classList.contains('hidden-input')) || node.tagName !== 'INPUT'
+                    });
+
+                    // Restaurar estilo original si se cambió
+                    if (originalClip) title.style.webkitBackgroundClip = originalClip;
+                } else {
+                    throw new Error('Librería html-to-image no cargada.');
+                }
             } catch (err) {
-                console.error(err);
-                alert('No se pudo exportar la imagen. Si usas imágenes de internet, el navegador puede bloquear la exportación por seguridad.');
-            } finally {
-                // Restaurar estilos.
-                card.style.transform = prevTransform;
-                if (wrapper) {
-                    wrapper.style.width = prevWrapperW;
-                    wrapper.style.height = prevWrapperH;
+                console.warn('Falló html-to-image:', err);
+                console.log('Intentando fallback con html2canvas...');
+                method = 'html2canvas';
+
+                try {
+                    if (window.html2canvas) {
+                        const canvas = await window.html2canvas(card, {
+                            backgroundColor: null,
+                            scale: 2, // Mayor resolución para compensar
+                            useCORS: true,
+                            allowTaint: true, // Permite imágenes locales aunque "manche" el canvas
+                            onclone: (clonedDoc) => {
+                                // Fix para texto degradado en html2canvas
+                                const titles = clonedDoc.querySelectorAll('.main-title');
+                                titles.forEach(t => {
+                                    t.style.background = 'none';
+                                    t.style.webkitBackgroundClip = 'initial';
+                                    t.style.webkitTextFillColor = 'initial';
+                                    t.style.color = '#FFFFFF';
+                                    t.style.textShadow = '0 0 15px var(--c-primary), 0 5px 10px black';
+                                });
+                            }
+                        });
+                        dataUrl = canvas.toDataURL('image/png');
+                    } else {
+                        throw new Error('Librería html2canvas no cargada.');
+                    }
+                } catch (err2) {
+                    console.error('Fallaron ambos métodos:', err2);
+                    alert('Error crítico al exportar. Intenta usar otro navegador (Chrome/Firefox) o asegurate de estar en un servidor local (localhost).');
                 }
-                isExporting = false;
-                if (typeof observer !== 'undefined' && observer) {
-                    observer.observe(document.getElementById('flyer-card'), { attributes: true, childList: true, subtree: true, characterData: true });
-                }
-                setTimeout(resizeCard, 50);
             }
+
+            if (dataUrl) {
+                const link = document.createElement('a');
+                link.download = `flyer-${method}-${Date.now()}.png`;
+                link.href = dataUrl;
+                link.click();
+            }
+
+            // Restaurar imágenes originales (quitando base64 temporal)
+            restoreImages(card);
+            
+            // Limpiar fuentes incrustadas para no saturar memoria
+            removeEmbeddedFonts();
+
+            // Restaurar estilos.
+            card.style.transform = prevTransform;
+            if (wrapper) {
+                wrapper.style.width = prevWrapperW;
+                wrapper.style.height = prevWrapperH;
+            }
+            isExporting = false;
+            if (typeof observer !== 'undefined' && observer) {
+                observer.observe(document.getElementById('flyer-card'), { attributes: true, childList: true, subtree: true, characterData: true });
+            }
+            setTimeout(resizeCard, 50);
         }
 
         window.addEventListener('resize', () => { if (!isExporting) resizeCard(); });

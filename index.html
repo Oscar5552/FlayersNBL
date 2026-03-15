@@ -206,7 +206,7 @@
         }
 
         .logo-SGL {
-            height: 190px;
+            height: 230px;
             filter: drop-shadow(0 0 15px rgba(var(--c-accent-rgb), 0.6));
         }
 
@@ -533,12 +533,11 @@
 
         <div class="panel-row">
             <span class="label-text">TIPO:</span>
-            <button id="btn-type-chill" class="btn" onclick="setTournamentType('chill')">CHILL</button>
+            <button id="btn-type-chill" class="btn btn-active" onclick="setTournamentType('chill')">CHILL</button>
             <button id="btn-type-minor" class="btn" onclick="setTournamentType('minor')">MINOR</button>
             <button id="btn-type-local" class="btn" onclick="setTournamentType('local')">LOCAL</button>
             <button id="btn-type-reto" class="btn" onclick="setTournamentType('reto')">RETO</button>
-            <button id="btn-type-copa" class="btn" onclick="setTournamentType('copa')">COPA</button>
-            <button id="btn-type-none" class="btn btn-active" onclick="setTournamentType('none')">NINGUNO</button>
+            <button id="btn-type-copa" class="btn " onclick="setTournamentType('copa')">COPA</button>
         </div>
 
         <div class="panel-row">
@@ -566,7 +565,7 @@
                     onerror="this.src='https://placehold.co/1080x1920/black/333'">
             </div>
 
-            <img id="tournament-badge" src="" class="tournament-badge" onmousedown="startDrag(event, this)" onerror="this.style.display='none'">
+            <img id="tournament-badge" src="" class="tournament-badge" onmousedown="startDrag(event, this)" onerror="this.style.display='chill'">
 
             <div class="header-bar">
                 <div class="header-left"><img id="img-venue" src="Arlequin.png" class="logo-venue"
@@ -723,16 +722,13 @@ mejor de 3 sets
             const badge = document.getElementById('tournament-badge');
             
             // Actualizar botones activos
-            const types = ['chill', 'minor', 'local', 'reto', 'copa', 'none'];
+            const types = ['chill', 'minor', 'local', 'reto', 'copa'];
             types.forEach(t => {
                 const btn = document.getElementById(`btn-type-${t}`);
                 if (btn) btn.classList.toggle('btn-active', t === type);
             });
 
-            if (type === 'none') {
-                badge.style.display = 'none';
-                return;
-            }
+
             
             // Ajustar tamaño individual según el tipo
             if (type === 'minor') {
@@ -1093,6 +1089,7 @@ mejor de 3 sets
 
         window.addEventListener('resize', () => { if (!isExporting) resizeCard(); });
         window.addEventListener('load', () => {
+            setTournamentType('chill');
             setPrizeMode('none');
             resizeCard();
         });

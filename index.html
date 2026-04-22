@@ -384,11 +384,11 @@
             text-align: center;
         }
 
-        /* --- FOOTER & MISC --- */
+/* --- FOOTER & MISC --- */
         .footer-note {
             width: 100%;
             margin-top: auto;
-            padding: 20px 10px;
+            padding: 22px 18px;
             text-align: center;
             font-family: 'Teko', sans-serif;
             font-size: 1.8rem;
@@ -396,11 +396,26 @@
             text-shadow: 0 0 10px black;
             text-transform: uppercase;
             letter-spacing: 1px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.55);
             border-top: 1px solid #333;
             white-space: pre-wrap;
-            /* Permite Enters en el footer */
             margin-bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 54px;
+            flex-wrap: wrap;
+        }
+
+        .footer-note .sponsor-logo {
+            height: 150px;
+            width: auto !important;
+            max-width: 440px;
+            object-fit: contain;
+            filter:
+                drop-shadow(0 0 28px rgba(var(--c-primary-rgb), 0.65))
+                drop-shadow(0 6px 16px rgba(0,0,0,0.85));
+            image-rendering: auto;
         }
 
         .price-tag {
@@ -418,7 +433,7 @@
             box-shadow: 0 0 20px rgba(var(--c-accent-rgb), 0.8);
         }
 
-        .tournament-badge {
+.tournament-badge {
             position: absolute;
             top: 20px;
             left: 20px;
@@ -429,7 +444,7 @@
             display: none;
         }
 
-        .tournament-badge:active {
+.tournament-badge:active {
             cursor: grabbing;
         }
 
@@ -540,7 +555,7 @@
             <button id="btn-type-copa" class="btn " onclick="setTournamentType('copa')">COPA</button>
         </div>
 
-        <div class="panel-row">
+<div class="panel-row">
             <span class="label-text">LUGAR:</span>
             <button id="btn-venue-arlequin" class="btn btn-active" onclick="setVenue('arlequin')">ARLEQUÍN</button>
             <button id="btn-venue-friki" class="btn" onclick="setVenue('friki')">FRIKI</button>
@@ -565,7 +580,7 @@
                     onerror="this.src='https://placehold.co/1080x1920/black/333'">
             </div>
 
-            <img id="tournament-badge" src="" class="tournament-badge" onmousedown="startDrag(event, this)" onerror="this.style.display='chill'">
+<img id="tournament-badge" src="" class="tournament-badge" onmousedown="startDrag(event, this)" onerror="this.style.display='chill'">
 
             <div class="header-bar">
                 <div class="header-left"><img id="img-venue" src="Arlequin.png" class="logo-venue"
@@ -610,10 +625,10 @@
                                 <div class="award-label" contenteditable="true">EXTRA</div>
                             </div>
                         </div>
-                         <div id="awards-banner" class="awards-banner" onclick="triggerUpload('input-award-banner')">
-                             <img id="img-award-banner" src="" class="award-img" style="display:none;">
-                             <div class="award-label" contenteditable="true">GALERIA DE PREMIOS SUJETO A DISPONIBILIDAD DE LA TIENDA</div>
-                         </div>
+                        <div id="awards-banner" class="awards-banner" onclick="triggerUpload('input-award-banner')">
+                            <img id="img-award-banner" src="" class="award-img" style="display:none;">
+                            <div class="award-label" contenteditable="true">GALERIA DE PREMIOS SUJETO A DISPONIBILIDAD DE LA TIENDA</div>
+                        </div>
                     </div>
 
                     <div class="info-grid">
@@ -683,9 +698,13 @@ mejor de 3 sets
                             </div>
                         </div>
                     </div>
-                </div>
+</div>
 
-                <div class="footer-note" contenteditable="true" id="footer-text">¡PREMIO EXCLUSIVO DE NINOS MENORES DE 12 ANOS! | TOLERANCIA 10 MIN | AL MEJOR JUGADOR MENOR DE 12 ANOS SE LE GARANTIZA PREMIO, EN CASO GRAN CANTIDAD DE NIÑOS SERÍAN LOS MEJORES 2 LOS QUE SE LLEVARÍAN PREMIO.</div>
+                <div class="footer-note">
+                    <img id="sponsor-lrq" src="LigaRebelsQueretaro.png" class="sponsor-logo" alt="Liga Rebels Queretaro" onerror="this.style.display='none'">
+                    <img id="sponsor-vortex" src="vortex.png" class="sponsor-logo" alt="Vortex" onerror="this.style.display='none'">
+                    <img id="sponsor-mnbcs" src="mnbcs.png" class="sponsor-logo" alt="MNBCS" onerror="this.style.display='none'">
+                </div>
             </div>
         </div>
     </div>
@@ -739,7 +758,7 @@ mejor de 3 sets
                 badge.style.width = '300px'; // Chill, Local
             }
 
-            badge.src = type + '.png';
+badge.src = type + '.png';
             badge.style.display = 'block';
         }
 
@@ -1087,7 +1106,7 @@ mejor de 3 sets
             setTimeout(resizeCard, 50);
         }
 
-        window.addEventListener('resize', () => { if (!isExporting) resizeCard(); });
+window.addEventListener('resize', () => { if (!isExporting) resizeCard(); });
         window.addEventListener('load', () => {
             setTournamentType('chill');
             setPrizeMode('none');
